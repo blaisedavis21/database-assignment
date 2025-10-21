@@ -435,3 +435,200 @@ def show_recent_allocations(request):
 
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)    
+    
+
+#editing students
+@csrf_exempt
+def delete_student(request, student_id):
+    if request.method == 'DELETE':
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("DELETE FROM students WHERE student_id = %s", [student_id])
+
+            return JsonResponse({'message': f'Student {student_id} deleted successfully!'}, status=200)
+
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+
+    return JsonResponse({'error': 'Only DELETE method allowed.'}, status=405)
+
+#deleting students
+
+@csrf_exempt
+def delete_student(request, student_id):
+    if request.method == 'DELETE':
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("DELETE FROM students WHERE student_id = %s", [student_id])
+
+            return JsonResponse({'message': f'Student {student_id} deleted successfully!'}, status=200)
+
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+
+    return JsonResponse({'error': 'Only DELETE method allowed.'}, status=405)
+
+
+# --------------------------------------------
+# UPDATE APIS
+# --------------------------------------------
+
+@csrf_exempt
+def update_sponsor(request, sponsor_id):
+    """Update sponsor information by sponsor_id"""
+    if request.method in ['PUT', 'POST']:
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            organization_name = data.get('organization_name')
+            contact_person = data.get('contact_person')
+            contact = data.get('contact')
+            email = data.get('email')
+            address = data.get('address')
+
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    UPDATE sponsors SET
+                        organization_name = COALESCE(%s, organization_name),
+                        contact_person = COALESCE(%s, contact_person),
+                        contact = COALESCE(%s, contact),
+                        email = COALESCE(%s, email),
+                        address = COALESCE(%s, address)
+                    WHERE sponsor_id = %s
+                """, [organization_name, contact_person, contact, email, address, sponsor_id])
+
+            return JsonResponse({'message': f'Sponsor {sponsor_id} updated successfully!'}, status=200)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    return JsonResponse({'error': 'Only PUT or POST method allowed.'}, status=405)
+
+@csrf_exempt
+def update_scholarship_program(request, program_id):
+    """Update scholarship program by program_id"""
+    if request.method in ['PUT', 'POST']:
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            sponsor_id = data.get('sponsor_id')
+            program_name = data.get('program_name')
+            amount_per_student = data.get('amount_per_student')
+            duration = data.get('duration')
+
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    UPDATE scholarship_programs SET
+                        sponsor_id = COALESCE(%s, sponsor_id),
+                        program_name = COALESCE(%s, program_name),
+                        amount_per_student = COALESCE(%s, amount_per_student),
+                        duration = COALESCE(%s, duration)
+                    WHERE program_id = %s
+                """, [sponsor_id, program_name, amount_per_student, duration, program_id])
+
+            return JsonResponse({'message': f'Program {program_id} updated successfully!'}, status=200)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    return JsonResponse({'error': 'Only PUT or POST method allowed.'}, status=405)
+
+@csrf_exempt
+def update_sponsorship_allocation(request, allocation_id):
+    """Update sponsorship allocation by allocation_id"""
+    if request.method in ['PUT', 'POST']:
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            student_id = data.get('student_id')
+            program_id = data.get('program_id')
+            start_date = data.get('start_date')
+            end_date = data.get('end_date')
+            status = data.get('status')
+
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    UPDATE sponsorship_allocations SET
+                        student_id = COALESCE(%s, student_id),
+                        program_id = COALESCE(%s, program_id),
+                        start_date = COALESCE(%s, start_date),
+                        end_date = COALESCE(%s, end_date),
+                        status = COALESCE(%s, status)
+                    WHERE allocation_id = %s
+                """, [student_id, program_id, start_date, end_date, status, allocation_id])
+
+            return JsonResponse({'message': f'Allocation {allocation_id} updated successfully!'}, status=200)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    return JsonResponse({'error': 'Only PUT or POST method allowed.'}, status=405)
+
+@csrf_exempt
+def update_payment(request, payment_id):
+    """Update payment information by payment_id"""
+    if request.method in ['PUT', 'POST']:
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            allocation_id = data.get('allocation_id')
+            amount = data.get('amount')
+            payment_date = data.get('payment_date')
+            semester = data.get('semester')
+
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    UPDATE payments SET
+                        allocation_id = COALESCE(%s, allocation_id),
+                        amount = COALESCE(%s, amount),
+                        payment_date = COALESCE(%s, payment_date),
+                        semester = COALESCE(%s, semester)
+                    WHERE payment_id = %s
+                """, [allocation_id, amount, payment_date, semester, payment_id])
+
+            return JsonResponse({'message': f'Payment {payment_id} updated successfully!'}, status=200)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    return JsonResponse({'error': 'Only PUT or POST method allowed.'}, status=405)
+
+# --------------------------------------------
+# DELETE APIS
+# --------------------------------------------
+
+@csrf_exempt
+def delete_sponsor(request, sponsor_id):
+    """Delete a sponsor by sponsor_id"""
+    if request.method == 'DELETE':
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("DELETE FROM sponsors WHERE sponsor_id = %s", [sponsor_id])
+            return JsonResponse({'message': f'Sponsor {sponsor_id} deleted successfully!'}, status=200)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    return JsonResponse({'error': 'Only DELETE method allowed.'}, status=405)
+
+@csrf_exempt
+def delete_scholarship_program(request, program_id):
+    """Delete a scholarship program by program_id"""
+    if request.method == 'DELETE':
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("DELETE FROM scholarship_programs WHERE program_id = %s", [program_id])
+            return JsonResponse({'message': f'Program {program_id} deleted successfully!'}, status=200)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    return JsonResponse({'error': 'Only DELETE method allowed.'}, status=405)
+
+@csrf_exempt
+def delete_sponsorship_allocation(request, allocation_id):
+    """Delete a sponsorship allocation by allocation_id"""
+    if request.method == 'DELETE':
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("DELETE FROM sponsorship_allocations WHERE allocation_id = %s", [allocation_id])
+            return JsonResponse({'message': f'Allocation {allocation_id} deleted successfully!'}, status=200)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    return JsonResponse({'error': 'Only DELETE method allowed.'}, status=405)
+
+@csrf_exempt
+def delete_payment(request, payment_id):
+    """Delete a payment by payment_id"""
+    if request.method == 'DELETE':
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("DELETE FROM payments WHERE payment_id = %s", [payment_id])
+            return JsonResponse({'message': f'Payment {payment_id} deleted successfully!'}, status=200)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    return JsonResponse({'error': 'Only DELETE method allowed.'}, status=405)
