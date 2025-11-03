@@ -1,0 +1,1735 @@
+------src\App.css
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+================================================================================
+
+------src\App.js
+import React, { useState } from "react";
+import Sidebar from "./components/Sidebar";
+import Dashboard from "./components/Dashboard";
+import StudentTable from "./components/StudentTable";
+import SponsorsTable from "./components/SponsorsTable";
+import ProgramsTable from "./components/ProgramsTable";
+import AllocationsTable from "./components/AllocationsTable";
+import PaymentsTable from "./components/PaymentsTable";
+import "./App.css";
+
+function App() {
+  const [selected, setSelected] = useState("Dashboard");
+
+  let mainContent;
+  switch (selected) {
+    case "Dashboard":
+      mainContent = <Dashboard />;
+      break;
+    case "Students":
+      mainContent = <StudentTable />;
+      break;
+    case "Sponsors":
+      mainContent = <SponsorsTable />;
+      break;
+    case "Scholarship Programs":
+      mainContent = <ProgramsTable />;
+      break;
+    case "Allocations":
+      mainContent = <AllocationsTable />;
+      break;
+    case "Payments":
+      mainContent = <PaymentsTable />;
+      break;
+    default:
+      mainContent = <div style={{ margin: 40 }}>Welcome to SSMS Dashboard</div>;
+      break;
+  }
+
+  return (
+    <div style={{ background: "#f3f5fa", minHeight: "100vh" }}>
+      <Sidebar selected={selected} onSelect={setSelected} />
+      <div
+        style={{
+          marginLeft: 220,
+          minHeight: "100vh",
+          paddingBottom: 40,
+          overflowY: "auto"
+        }}
+      >
+        {mainContent}
+      </div>
+    </div>
+  );
+}
+
+export default App;
+
+================================================================================
+
+------src\App.test.js
+import { render, screen } from '@testing-library/react';
+import App from './App';
+
+test('renders learn react link', () => {
+  render(<App />);
+  const linkElement = screen.getByText(/learn react/i);
+  expect(linkElement).toBeInTheDocument();
+});
+
+================================================================================
+
+------src\index.css
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+================================================================================
+
+------src\index.js
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import App from './App';
+import reportWebVitals from './reportWebVitals';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+reportWebVitals();
+
+================================================================================
+
+------src\output.txt
+
+================================================================================
+
+------src\reportWebVitals.js
+const reportWebVitals = onPerfEntry => {
+  if (onPerfEntry && onPerfEntry instanceof Function) {
+    import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
+      getCLS(onPerfEntry);
+      getFID(onPerfEntry);
+      getFCP(onPerfEntry);
+      getLCP(onPerfEntry);
+      getTTFB(onPerfEntry);
+    });
+  }
+};
+
+export default reportWebVitals;
+
+================================================================================
+
+------src\setupTests.js
+// jest-dom adds custom jest matchers for asserting on DOM nodes.
+// allows you to do things like:
+// expect(element).toHaveTextContent(/react/i)
+// learn more: https://github.com/testing-library/jest-dom
+import '@testing-library/jest-dom';
+
+================================================================================
+
+------src\components\AddAllocationForm.js
+import React, { useState } from "react";
+import "./StudentForm.css";
+
+export default function AddAllocationForm({ onClose, onSave }) {
+  const [form, setForm] = useState({
+    allocation_id: "",
+    student_id: "",
+    program_id: "",
+    startdate: "",
+    enddate: "",
+    status: ""
+  });
+
+  function handleChange(e) {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    onSave(form);
+    onClose();
+  }
+
+  return (
+    <div className="student-modal-overlay">
+      <div className="student-modal">
+        <div className="modal-header">
+          <span className="modal-title">Add Sponsorship Allocation</span>
+          <button className="close-btn" onClick={onClose}>×</button>
+        </div>
+        <form onSubmit={handleSubmit}>
+          <label>Allocation ID *</label>
+          <input name="allocation_id" type="text" value={form.allocation_id} onChange={handleChange} required />
+          <label>Student ID *</label>
+          <input name="student_id" type="text" value={form.student_id} onChange={handleChange} required />
+          <label>Program ID *</label>
+          <input name="program_id" type="text" value={form.program_id} onChange={handleChange} required />
+          <label>Start Date *</label>
+          <input name="startdate" type="date" value={form.startdate} onChange={handleChange} required />
+          <label>End Date *</label>
+          <input name="enddate" type="date" value={form.enddate} onChange={handleChange} required />
+          <label>Status *</label>
+          <select name="status" value={form.status} onChange={handleChange} required>
+            <option value="">Select Status</option>
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 26 }}>
+            <button type="button" className="modal-cancel-btn" onClick={onClose}>Cancel</button>
+            <button type="submit" className="modal-save-btn">Save Allocation</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+================================================================================
+
+------src\components\AddPaymentForm.js
+import React, { useState } from "react";
+import "./StudentForm.css";
+
+export default function AddPaymentForm({ onClose, onSave }) {
+  const [form, setForm] = useState({
+    payment_id: "",
+    allocation_id: "",
+    amount_id: "",
+    paymentdate: "",
+    semester: ""
+  });
+
+  function handleChange(e) {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    onSave(form);
+    onClose();
+  }
+
+  return (
+    <div className="student-modal-overlay">
+      <div className="student-modal">
+        <div className="modal-header">
+          <span className="modal-title">Add Payment</span>
+          <button className="close-btn" onClick={onClose}>×</button>
+        </div>
+        <form onSubmit={handleSubmit}>
+          <label>Payment ID *</label>
+          <input name="payment_id" type="text" value={form.payment_id} onChange={handleChange} required />
+          <label>Allocation ID *</label>
+          <input name="allocation_id" type="text" value={form.allocation_id} onChange={handleChange} required />
+          <label>Amount ID *</label>
+          <input name="amount_id" type="text" value={form.amount_id} onChange={handleChange} required />
+          <label>Payment Date *</label>
+          <input name="paymentdate" type="date" value={form.paymentdate} onChange={handleChange} required />
+          <label>Semester *</label>
+          <select name="semester" value={form.semester} onChange={handleChange} required>
+            <option value="">Select Semester</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+          </select>
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 26 }}>
+            <button type="button" className="modal-cancel-btn" onClick={onClose}>Cancel</button>
+            <button type="submit" className="modal-save-btn">Save Payment</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+================================================================================
+
+------src\components\AddScholarshipForm.js
+import React, { useState } from "react";
+import "./StudentForm.css"; // Same modal CSS
+
+export default function AddScholarshipForm({ onClose, onSave }) {
+  const [form, setForm] = useState({
+    program_id: "",
+    sponsor_id: "",
+    program_name: "",
+    amount_per_student: "",
+    duration: "",
+    Qualifications: ""
+  });
+
+  function handleChange(e) {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    onSave(form);
+    onClose();
+  }
+
+  return (
+    <div className="student-modal-overlay">
+      <div className="student-modal">
+        <div className="modal-header">
+          <span className="modal-title">Add Scholarship Program</span>
+          <button className="close-btn" onClick={onClose}>×</button>
+        </div>
+        <form onSubmit={handleSubmit}>
+          <label>Program ID *</label>
+          <input name="program_id" type="text" value={form.program_id} onChange={handleChange} required />
+          <label>Sponsor ID *</label>
+          <input name="sponsor_id" type="text" value={form.sponsor_id} onChange={handleChange} required />
+          <label>Program Name *</label>
+          <input name="program_name" type="text" value={form.program_name} onChange={handleChange} required />
+          <label>Amount Per Student *</label>
+          <input name="amount_per_student" type="text" value={form.amount_per_student} onChange={handleChange} required />
+          <label>Duration *</label>
+          <input name="duration" type="text" value={form.duration} onChange={handleChange} required />
+          <label>Qualifications *</label>
+          <input name="Qualifications" type="text" value={form.Qualifications} onChange={handleChange} required />
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 26 }}>
+            <button type="button" className="modal-cancel-btn" onClick={onClose}>Cancel</button>
+            <button type="submit" className="modal-save-btn">Save Program</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+================================================================================
+
+------src\components\AddSponsorForm.js
+import React, { useState } from "react";
+import "./StudentForm.css"; // Same modal CSS
+
+export default function AddSponsorForm({ onClose, onSave }) {
+  const [form, setForm] = useState({
+    sponsor_id: "",
+    Organization_name: "",
+    contact_person: "",
+    contact: "",
+    email: "",
+    address: ""
+  });
+
+  function handleChange(e) {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    onSave(form);
+    onClose();
+  }
+
+  return (
+    <div className="student-modal-overlay">
+      <div className="student-modal">
+        <div className="modal-header">
+          <span className="modal-title">Add Sponsor</span>
+          <button className="close-btn" onClick={onClose}>×</button>
+        </div>
+        <form onSubmit={handleSubmit}>
+          <label>Sponsor ID *</label>
+          <input name="sponsor_id" type="text" value={form.sponsor_id} onChange={handleChange} required />
+          <label>Organization Name *</label>
+          <input name="Organization_name" type="text" value={form.Organization_name} onChange={handleChange} required />
+          <label>Contact Person *</label>
+          <input name="contact_person" type="text" value={form.contact_person} onChange={handleChange} required />
+          <label>Contact *</label>
+          <input name="contact" type="text" value={form.contact} onChange={handleChange} required />
+          <label>Email *</label>
+          <input name="email" type="email" value={form.email} onChange={handleChange} required />
+          <label>Address *</label>
+          <input name="address" type="text" value={form.address} onChange={handleChange} required />
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 26 }}>
+            <button type="button" className="modal-cancel-btn" onClick={onClose}>Cancel</button>
+            <button type="submit" className="modal-save-btn">Save Sponsor</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+================================================================================
+
+------src\components\AllocationsTable.js
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import AddAllocationForm from "./AddAllocationForm";
+import "./EntityTable.css";
+
+export default function AllocationsTable() {
+  const [allocations, setAllocations] = useState([]);
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState("All");
+  const [showAdd, setShowAdd] = useState(false);
+
+  useEffect(() => {
+    fetchAllocations();
+  }, []);
+
+  function fetchAllocations() {
+    axios.get("/show-allocations/").then(res => setAllocations(res.data));
+  }
+
+  function handleAddAllocation(data) {
+    axios.post("/add-allocation/", data).then(() => fetchAllocations());
+  }
+
+  const filtered = allocations.filter(
+    a =>
+      (String(a.allocation_id).toLowerCase().includes(search.toLowerCase()) ||
+        String(a.student_id).toLowerCase().includes(search.toLowerCase()) ||
+        String(a.program_id).toLowerCase().includes(search.toLowerCase())) &&
+      (status === "All" || a.status === status)
+  );
+
+  return (
+    <div className="entity-table-container">
+      <div className="search-bar">
+        <input type="text" placeholder="Search by allocation ID, student ID, or program ID..." value={search} onChange={e => setSearch(e.target.value)} className="search-field"/>
+        <div className="search-filters">
+          <div>
+            <label className="filter-label">Status</label>
+            <select value={status} onChange={e => setStatus(e.target.value)}>
+              <option>All</option>
+              <option>Active</option>
+              <option>Inactive</option>
+            </select>
+          </div>
+        </div>
+        <button className="export-btn">Export</button>
+        <button className="list-btn"><span role="img" aria-label="table">&#9776;</span></button>
+      </div>
+      <div className="entity-header">
+        <h2>Sponsorship Allocations</h2>
+        <button className="primary-btn" onClick={() => setShowAdd(true)}>
+          + Add Allocation
+        </button>
+      </div>
+      <table className="entity-table">
+        <thead>
+          <tr>
+            <th>Allocation ID</th>
+            <th>Student ID</th>
+            <th>Program ID</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filtered.map(a => (
+            <tr key={a.allocation_id}>
+              <td>{a.allocation_id}</td>
+              <td>{a.student_id}</td>
+              <td>{a.program_id}</td>
+              <td>{a.startdate}</td>
+              <td>{a.enddate}</td>
+              <td>{a.status}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      {showAdd && (
+        <AddAllocationForm
+          onClose={() => setShowAdd(false)}
+          onSave={data => {
+            handleAddAllocation(data);
+            setShowAdd(false);
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+================================================================================
+
+------src\components\Dashboard.css
+.dashboard-container {
+  padding: 35px 40px;
+}
+
+.dashboard-cards {
+  display: flex;
+  gap: 23px;
+  margin-bottom: 30px;
+}
+
+.dashboard-card {
+  background: #fff;
+  border-radius: 15px;
+  box-shadow: 0 2px 10px rgba(36,42,69,0.07);
+  display: flex;
+  align-items: center;
+  padding: 26px 28px;
+  gap: 16px;
+  min-width: 210px;
+}
+
+.dashboard-card-dot {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+
+.dashboard-card-label {
+  font-size: 1.09rem;
+  color: #6e7690;
+  font-weight: 600;
+}
+
+.dashboard-card-value {
+  font-size: 2rem;
+  color: #223260;
+  font-weight: bold;
+}
+
+.dashboard-main-row {
+  display: flex;
+  gap: 29px;
+}
+
+.dashboard-main-col {
+  flex: 2;
+}
+
+.dashboard-chart-card {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 10px rgba(36,42,69,0.07);
+  padding: 26px;
+}
+
+.chart-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.chart-subtitle {
+  color: #9e9eae;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.bar-chart-placeholder {
+  display: flex;
+  gap: 16px;
+  height: 120px;
+  align-items: flex-end;
+  margin-bottom: 6px;
+}
+
+.bar {
+  width: 36px;
+  background: #347cf7;
+  color: #fff;
+  text-align: center;
+  font-size: 1rem;
+  border-radius: 6px 6px 0 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.quarters-labels {
+  display: flex;
+  gap: 24px;
+  font-size: 13px;
+  color: #888;
+  margin-top: 3px;
+}
+
+.dashboard-side-card {
+  background: #fff;
+  border-radius: 13px;
+  box-shadow: 0 2px 10px rgba(36,42,69,0.07);
+  width: 290px;
+  padding: 23px 18px;
+}
+
+.side-card-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.recent-user {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 13px;
+  border-bottom: 1px solid #ecf0f8;
+  padding-bottom: 9px;
+}
+
+.recent-dot {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  margin-top: 5px;
+}
+
+.quick-stats-row {
+  margin-top: 33px;
+  background: #fff;
+  border-radius: 13px;
+  box-shadow: 0 2px 10px rgba(36,42,69,0.07);
+  padding: 25px 28px;
+  display: flex;
+  gap: 50px;
+}
+
+.quick-title {
+  font-size: 1.13rem;
+  font-weight: 700;
+  margin-bottom: 13px;
+}
+
+.quick-number {
+  font-size: 1.13rem;
+  font-weight: 700;
+  color: #223260;
+}
+
+.u-color {
+  color: #347cf7;
+}
+
+.u-green {
+  color: #38d99c;
+}
+
+.quick-label {
+  color: #7d7d8c;
+  font-size: 14px;
+}
+
+.chart-bar {
+  display: inline-block;
+  height: 10px;
+  border-radius: 5px;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+.bar-label {
+  color: #223260;
+  font-size: 14px;
+  margin-bottom: 3px;
+}
+
+.bar-value {
+  color: #888;
+  font-size: 13px;
+  margin-left: 6px;
+}
+
+================================================================================
+
+------src\components\Dashboard.js
+import React from "react";
+import "./Dashboard.css";
+// You can use chart libraries like `recharts` or `chart.js`. Below is a simple placeholder for the bar chart.
+
+export default function Dashboard() {
+  // Example (mock) data. Replace with real stats/props as needed.
+  const stats = [
+    { label: "Total Students", value: "150", color: "#538dfe" },
+    { label: "Total Sponsors", value: "25", color: "#38d99c" },
+    { label: "Active Allocations", value: "120", color: "#f0ad4e" },
+    { label: "Total Payments", value: "UGX 450M", color: "#b084fc" }
+  ];
+
+  const recentAllocations = [
+    { name: "John Doe", scholarship: "Merit Scholarship", color: "#347cf7", days: "2 days ago" },
+    { name: "Jane Smith", scholarship: "Need-based Grant", color: "#38d99c", days: "5 days ago" },
+    { name: "Mark Wilson", scholarship: "Sports Scholarship", color: "#f4b548", days: "1 week ago" }
+  ];
+
+  return (
+    <div className="dashboard-container">
+      <h1>Dashboard</h1>
+      <div className="dashboard-cards">
+        {stats.map(s => (
+          <div className="dashboard-card" key={s.label}>
+            <div className="dashboard-card-dot" style={{ background: s.color }} />
+            <div>
+              <div className="dashboard-card-label">{s.label}</div>
+              <div className="dashboard-card-value">{s.value}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="dashboard-main-row">
+        <div className="dashboard-main-col">
+          <div className="dashboard-chart-card">
+            <div className="chart-title">Sponsorship Allocation Trends</div>
+            <div className="chart-subtitle">Quarterly overview of allocations</div>
+            {/* Use Recharts, Chart.js, or similar for real data; placeholder below */}
+            <div className="bar-chart-placeholder">
+              <div className="bar" style={{ height: 70 }}>28</div>
+              <div className="bar" style={{ height: 90 }}>35</div>
+              <div className="bar" style={{ height: 110 }}>42</div>
+              <div className="bar" style={{ height: 50 }}>22</div>
+              <div className="bar" style={{ height: 80 }}>30</div>
+            </div>
+            <div className="quarters-labels">
+              <span>Q1 2024</span>
+              <span>Q2 2024</span>
+              <span>Q3 2024</span>
+              <span>Q4 2024</span>
+              <span>Q1 2025</span>
+            </div>
+          </div>
+        </div>
+        <div className="dashboard-side-card">
+          <div className="side-card-title">Recent Allocations</div>
+          {recentAllocations.map(a => (
+            <div className="recent-user" key={a.name}>
+              <div className="recent-dot" style={{ background: a.color }} />
+              <div>
+                <div><strong>{a.name}</strong></div>
+                <div style={{ fontSize: 13, color: "#888" }}>{a.scholarship}</div>
+                <div style={{ fontSize: 12, color: "#b9b9b9" }}>{a.days}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="quick-stats-row">
+        <div>
+          <div className="quick-title">Quick Statistics</div>
+          <div style={{ display: "flex", gap: 40, alignItems: 'flex-end', margin: "18px 0" }}>
+            <div>
+              <div className="quick-number">45</div>
+              <div className="quick-label">New This Month</div>
+            </div>
+            <div>
+              <div className="quick-number u-color">UGX 125M</div>
+              <div className="quick-label">Disbursed Q1</div>
+            </div>
+            <div>
+              <div className="quick-number">8</div>
+              <div className="quick-label">Active Programs</div>
+            </div>
+            <div>
+              <div className="quick-number u-green">98%</div>
+              <div className="quick-label">Completion Rate</div>
+            </div>
+          </div>
+        </div>
+        <div style={{ flex: 1 }}>
+          <div className="quick-label" style={{ marginBottom: 6 }}>Top Sponsors by Contribution</div>
+          <div style={{ marginBottom: 10 }}>
+            <div className="bar-label">ABC Foundation</div>
+            <div className="chart-bar" style={{ width: 200, background: "#347cf7" }}></div>
+            <span className="bar-value">UGX 225M</span>
+          </div>
+          <div>
+            <div className="bar-label">XYZ Trust</div>
+            <div className="chart-bar" style={{ width: 115, background: "#38d99c" }}></div>
+            <span className="bar-value">UGX 105M</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+================================================================================
+
+------src\components\EntityTable.css
+.entity-table-container {
+  margin: 40px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(36,42,69,0.09);
+  padding: 30px;
+}
+
+.search-bar {
+  background: #fafbff;
+  border: 1.5px solid #eff1f4;
+  border-radius: 12px;
+  padding: 14px 18px 12px 18px;
+  display: flex;
+  align-items: flex-end;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.search-field {
+  flex: 2;
+  padding: 9px 16px;
+  border-radius: 7px;
+  border: 1.2px solid #e1e6ed;
+  font-size: 1.03rem;
+  outline: none;
+  transition: border 0.2s;
+  background: #f6f8fa;
+}
+.search-field:focus {
+  border: 1.2px solid #347cf7;
+}
+
+.search-filters {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.search-filters label {
+  font-size: 11px;
+  color: #a0aec0;
+  font-weight: 600;
+  margin-bottom: 2px;
+  margin-left: 3px;
+}
+
+.search-filters select {
+  padding: 8px 14px;
+  font-size: 1.01rem;
+  border-radius: 7px;
+  border: 1.2px solid #e1e6ed;
+  background: #f6f8fa;
+  margin-right: 3px;
+}
+
+.export-btn,
+.list-btn {
+  padding: 8px 13px;
+  background: #f1f4f8;
+  color: #223260;
+  border: none;
+  border-radius: 8px;
+  margin-left: 7px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.export-btn:hover, .list-btn:hover {
+  background: #e2eaf7;
+}
+
+.entity-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+
+.entity-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.entity-table th, .entity-table td {
+  text-align: left;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e6effc;
+}
+
+.entity-table th {
+  background: #f2f6fb;
+  color: #347cf7;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.entity-table tr:last-child td {
+  border-bottom: none;
+}
+
+.entity-table tr:hover {
+  background: #f5f9ff;
+}
+
+================================================================================
+
+------src\components\PaymentsTable.js
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import AddPaymentForm from "./AddPaymentForm";
+import "./EntityTable.css";
+
+export default function PaymentsTable() {
+  const [payments, setPayments] = useState([]);
+  const [search, setSearch] = useState("");
+  const [semester, setSemester] = useState("All");
+  const [showAdd, setShowAdd] = useState(false);
+
+  useEffect(() => {
+    fetchPayments();
+  }, []);
+
+  function fetchPayments() {
+    axios.get("/show-payments/").then(res => setPayments(res.data));
+  }
+
+  function handleAddPayment(data) {
+    axios.post("/add-payment/", data).then(() => fetchPayments());
+  }
+
+  const filtered = payments.filter(
+    p =>
+      (String(p.payment_id).toLowerCase().includes(search.toLowerCase()) ||
+        String(p.allocation_id).toLowerCase().includes(search.toLowerCase()) ||
+        String(p.amount_id).toLowerCase().includes(search.toLowerCase())) &&
+      (semester === "All" || String(p.semester) === semester)
+  );
+
+  return (
+    <div className="entity-table-container">
+      <div className="search-bar">
+        <input type="text" placeholder="Search by payment ID, allocation ID, or amount ID..." value={search} onChange={e => setSearch(e.target.value)} className="search-field"/>
+        <div className="search-filters">
+          <div>
+            <label className="filter-label">Semester</label>
+            <select value={semester} onChange={e => setSemester(e.target.value)}>
+              <option>All</option>
+              <option>1</option>
+              <option>2</option>
+            </select>
+          </div>
+        </div>
+        <button className="export-btn">Export</button>
+        <button className="list-btn"><span role="img" aria-label="table">&#9776;</span></button>
+      </div>
+      <div className="entity-header">
+        <h2>Payments</h2>
+        <button className="primary-btn" onClick={() => setShowAdd(true)}>
+          + Add Payment
+        </button>
+      </div>
+      <table className="entity-table">
+        <thead>
+          <tr>
+            <th>Payment ID</th>
+            <th>Allocation ID</th>
+            <th>Amount ID</th>
+            <th>Payment Date</th>
+            <th>Semester</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filtered.map(p => (
+            <tr key={p.payment_id}>
+              <td>{p.payment_id}</td>
+              <td>{p.allocation_id}</td>
+              <td>{p.amount_id}</td>
+              <td>{p.paymentdate}</td>
+              <td>{p.semester}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      {showAdd && (
+        <AddPaymentForm
+          onClose={() => setShowAdd(false)}
+          onSave={data => {
+            handleAddPayment(data);
+            setShowAdd(false);
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+================================================================================
+
+------src\components\ProgramsTable.js
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import AddScholarshipForm from "./AddScholarshipForm";
+import "./EntityTable.css";
+
+export default function ProgramsTable() {
+  const [programs, setPrograms] = useState([]);
+  const [search, setSearch] = useState("");
+  const [duration, setDuration] = useState("All");
+  const [showAdd, setShowAdd] = useState(false);
+
+  useEffect(() => {
+    fetchPrograms();
+  }, []);
+
+  function fetchPrograms() {
+    axios.get("/show-programs/").then(res => setPrograms(res.data));
+  }
+
+  function handleAddProgram(data) {
+    axios.post("/add-scholarship-program/", data).then(() => fetchPrograms());
+  }
+
+  const filtered = programs.filter(
+    p =>
+      (p.programname.toLowerCase().includes(search.toLowerCase()) ||
+        String(p.program_id).toLowerCase().includes(search.toLowerCase()) ||
+        String(p.sponsor_id).toLowerCase().includes(search.toLowerCase())) &&
+      (duration === "All" || p.duration === duration)
+  );
+
+  const durationOptions = ["All", ...Array.from(new Set(programs.map(p => p.duration)))];
+
+  return (
+    <div className="entity-table-container">
+      <div className="search-bar">
+        <input type="text" placeholder="Search by program name or ID..." value={search} onChange={e => setSearch(e.target.value)} className="search-field"/>
+        <div className="search-filters">
+          <div>
+            <label className="filter-label">Duration</label>
+            <select value={duration} onChange={e => setDuration(e.target.value)}>
+              {durationOptions.map(opt => <option key={opt}>{opt}</option>)}
+            </select>
+          </div>
+        </div>
+        <button className="export-btn">Export</button>
+        <button className="list-btn"><span role="img" aria-label="table">&#9776;</span></button>
+      </div>
+      <div className="entity-header">
+        <h2>Scholarship Programs</h2>
+        <button className="primary-btn" onClick={() => setShowAdd(true)}>
+          + Add Scholarship
+        </button>
+      </div>
+      <table className="entity-table">
+        <thead>
+          <tr>
+            <th>Program ID</th>
+            <th>Sponsor ID</th>
+            <th>Program Name</th>
+            <th>Amount per Student</th>
+            <th>Duration</th>
+            <th>Qualifications</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filtered.map(p => (
+            <tr key={p.program_id}>
+              <td>{p.program_id}</td>
+              <td>{p.sponsor_id}</td>
+              <td>{p.programname}</td>
+              <td>{p.amountperstudent}</td>
+              <td>{p.duration}</td>
+              <td>{p.qualifications}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      {showAdd && (
+        <AddScholarshipForm
+          onClose={() => setShowAdd(false)}
+          onSave={data => {
+            handleAddProgram(data);
+            setShowAdd(false);
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+================================================================================
+
+------src\components\Sidebar.css
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 220px;
+  height: 100vh;
+  background: #23395d;
+  padding-top: 34px;
+  display: flex;
+  flex-direction: column;
+  z-index: 100; /* keep above scrollable content */
+}
+
+.sidebar-title {
+  color: #fff;
+  font-size: 1.7rem;
+  font-weight: bold;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.sidebar-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex: 1;
+}
+
+.sidebar-list li {
+  color: #d1e3ff;
+  padding: 16px 32px;
+  cursor: pointer;
+  font-size: 1.15rem;
+  border-left: 4px solid transparent;
+  transition: background 0.2s, color 0.2s;
+}
+
+.sidebar-list li:hover, .sidebar-list li.selected {
+  background: #1c2a47;
+  color: #fff;
+  border-left: 4px solid #347cf7;
+}
+
+================================================================================
+
+------src\components\Sidebar.js
+import React from "react";
+import "./Sidebar.css";
+
+const sidebarItems = [
+  "Dashboard",
+  "Students",
+  "Sponsors",
+  "Scholarship Programs",
+  "Allocations",
+  "Payments",
+  "Reports"
+];
+
+export default function Sidebar({ selected, onSelect }) {
+  return (
+    <aside className="sidebar">
+      <div className="sidebar-title">SSMS</div>
+      <ul className="sidebar-list">
+        {sidebarItems.map(item => (
+          <li
+            key={item}
+            className={selected === item ? "selected" : ""}
+            onClick={() => onSelect(item)}
+          >
+            {item}
+          </li>
+        ))}
+      </ul>
+    </aside>
+  );
+}
+
+================================================================================
+
+------src\components\SponsorsTable.js
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import AddSponsorForm from "./AddSponsorForm";
+import "./EntityTable.css";
+
+export default function SponsorsTable() {
+  const [sponsors, setSponsors] = useState([]);
+  const [search, setSearch] = useState("");
+  const [address, setAddress] = useState("All Locations");
+  const [showAdd, setShowAdd] = useState(false);
+
+  useEffect(() => {
+    fetchSponsors();
+  }, []);
+
+  function fetchSponsors() {
+    axios.get("/show-sponsors/").then(res => setSponsors(res.data));
+  }
+
+  function handleAddSponsor(data) {
+    axios.post("/add-sponsor/", data).then(() => fetchSponsors());
+  }
+
+  // Filtering
+  const filtered = sponsors.filter(
+    s =>
+      (s.organizationname.toLowerCase().includes(search.toLowerCase()) ||
+        s.contactperson.toLowerCase().includes(search.toLowerCase()) ||
+        String(s.sponsor_id).toLowerCase().includes(search.toLowerCase())) &&
+      (address === "All Locations" || s.address === address)
+  );
+
+  const addressOptions = [
+    "All Locations",
+    ...Array.from(new Set(sponsors.map(s => s.address)))
+  ];
+
+  return (
+    <div className="entity-table-container">
+      <div className="search-bar">
+        <input type="text" placeholder="Search by organization, contact person, or ID..." value={search} onChange={e => setSearch(e.target.value)} className="search-field" />
+        <div className="search-filters">
+          <div>
+            <label className="filter-label">Address</label>
+            <select value={address} onChange={e => setAddress(e.target.value)}>
+              {addressOptions.map(opt => <option key={opt}>{opt}</option>)}
+            </select>
+          </div>
+        </div>
+        <button className="export-btn">Export</button>
+        <button className="list-btn"><span role="img" aria-label="table">&#9776;</span></button>
+      </div>
+      <div className="entity-header">
+        <h2>Sponsors</h2>
+        <button className="primary-btn" onClick={() => setShowAdd(true)}>
+          + Add Sponsor
+        </button>
+      </div>
+      <table className="entity-table">
+        <thead>
+          <tr>
+            <th>Sponsor ID</th>
+            <th>Organization Name</th>
+            <th>Contact Person</th>
+            <th>Contact</th>
+            <th>Email</th>
+            <th>Address</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filtered.map(s => (
+            <tr key={s.sponsor_id}>
+              <td>{s.sponsor_id}</td>
+              <td>{s.organizationname}</td>
+              <td>{s.contactperson}</td>
+              <td>{s.contact}</td>
+              <td>{s.email}</td>
+              <td>{s.address}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      {showAdd && (
+        <AddSponsorForm
+          onClose={() => setShowAdd(false)}
+          onSave={data => {
+            handleAddSponsor(data);
+            setShowAdd(false);
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+================================================================================
+
+------src\components\StudentForm.css
+.student-modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(60, 60, 60, 0.32);
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.student-modal {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(36,42,69,0.14);
+  width: 420px;
+  max-width: 96vw;
+  max-height: 96vh;
+  padding: 32px 34px 28px 34px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-y: auto;         /* KEY: modal is scrollable! */
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.modal-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #2973ea;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.7rem;
+  color: #808080;
+  cursor: pointer;
+}
+
+.student-modal label {
+  font-weight: 600;
+  margin-bottom: 2px;
+  color: #273348;
+  display: block;
+  font-size: 0.97rem;
+  margin-top: 15px;
+}
+
+.student-modal input[type="text"],
+.student-modal input[type="email"],
+.student-modal input[type="date"],
+.student-modal select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e5e9f2;
+  border-radius: 7px;
+  outline: none;
+  margin-bottom: 6px;
+  font-size: 1.02rem;
+  background: #f7f9fc;
+  transition: border 0.2s;
+}
+
+.student-modal input:focus,
+.student-modal select:focus {
+  border-color: #347cf7;
+}
+
+.modal-cancel-btn {
+  background: #f1f3f7;
+  color: #223260;
+  border: 1px solid #e3e7ef;
+  padding: 10px 22px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-right: 3px;
+}
+
+.modal-save-btn {
+  background: #2973ea;
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  padding: 10px 26px;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+
+.modal-save-btn:hover {
+  background: #2356b8;
+}
+
+================================================================================
+
+------src\components\StudentForm.js
+import React, { useState } from "react";
+import "./StudentForm.css";
+
+export default function StudentForm({ onClose, onSave }) {
+  const [form, setForm] = useState({
+    student_id: "",
+    name: "",
+    gender: "Male",
+    date_of_birth: "",
+    contact: "",
+    email: "",
+    university: "Makerere University",
+    course: "",
+    year_of_study: ""
+  });
+
+  function handleChange(e) {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    onSave(form);
+    onClose();
+  }
+
+  return (
+    <div className="student-modal-overlay">
+      <div className="student-modal">
+        <div className="modal-header">
+          <span className="modal-title">Add New Student</span>
+          <button className="close-btn" onClick={onClose}>×</button>
+        </div>
+        <form onSubmit={handleSubmit}>
+          <label>Student ID *</label>
+          <input name="student_id" type="text" placeholder="Student ID" value={form.student_id} onChange={handleChange} required />
+          <label>Full Name *</label>
+          <input name="name" type="text" placeholder="Enter student's full name" value={form.name} onChange={handleChange} required />
+          <label>Gender *</label>
+          <div style={{ marginBottom: 10 }}>
+            <label><input type="radio" name="gender" value="Male" checked={form.gender === "Male"} onChange={handleChange} /> Male</label>
+            <label style={{ marginLeft: 18 }}><input type="radio" name="gender" value="Female" checked={form.gender === "Female"} onChange={handleChange} /> Female</label>
+          </div>
+          <label>Date of Birth *</label>
+          <input name="date_of_birth" type="date" value={form.date_of_birth} onChange={handleChange} required />
+          <label>Contact Number *</label>
+          <input name="contact" type="text" placeholder="+256 700 000 000" value={form.contact} onChange={handleChange} required />
+          <label>Email Address *</label>
+          <input name="email" type="email" placeholder="student@university.ac.ug" value={form.email} onChange={handleChange} required />
+          <label>University *</label>
+          <select name="university" value={form.university} onChange={handleChange} required>
+            <option>Makerere University</option>
+            <option>Kyambogo University</option>
+            <option>UCU</option>
+            <option>MUST</option>
+            <option>Gulu University</option>
+            <option>MUBS</option>
+            <option>Busitema University</option>
+          </select>
+          <label>Course/Program *</label>
+          <input name="course" type="text" placeholder="e.g., Bachelor of Computer Science" value={form.course} onChange={handleChange} required />
+          <label>Year of Study *</label>
+          <select name="year_of_study" value={form.year_of_study} onChange={handleChange} required>
+            <option value="">Select Year</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+          </select>
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 26 }}>
+            <button type="button" className="modal-cancel-btn" onClick={onClose}>Cancel</button>
+            <button type="submit" className="modal-save-btn">Save Student</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+================================================================================
+
+------src\components\StudentTable.css
+.students-table-container {
+  margin: 40px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(36,42,69,0.09);
+  padding: 30px;
+}
+
+.search-bar {
+  background: #fafbff;
+  border: 1.5px solid #eff1f4;
+  border-radius: 12px;
+  padding: 14px 18px 12px 18px;
+  display: flex;
+  align-items: flex-end;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.search-field {
+  flex: 2;
+  padding: 9px 16px;
+  border-radius: 7px;
+  border: 1.2px solid #e1e6ed;
+  font-size: 1.03rem;
+  outline: none;
+  transition: border 0.2s;
+  background: #f6f8fa;
+}
+.search-field:focus {
+  border: 1.2px solid #347cf7;
+}
+
+.search-filters {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.search-filters label {
+  font-size: 11px;
+  color: #a0aec0;
+  font-weight: 600;
+  margin-bottom: 2px;
+  margin-left: 3px;
+}
+
+.search-filters select {
+  padding: 8px 14px;
+  font-size: 1.01rem;
+  border-radius: 7px;
+  border: 1.2px solid #e1e6ed;
+  background: #f6f8fa;
+  margin-right: 3px;
+}
+
+.export-btn,
+.list-btn {
+  padding: 8px 13px;
+  background: #f1f4f8;
+  color: #223260;
+  border: none;
+  border-radius: 8px;
+  margin-left: 7px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.export-btn:hover, .list-btn:hover {
+  background: #e2eaf7;
+}
+
+.filter-label {
+  display: block;
+  font-size: 11px;
+  color: #a0aec0;
+  font-weight: 600;
+  margin-bottom: 0px;
+  margin-left: 2px;
+}
+
+.students-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+
+.primary-btn {
+  background: #347cf7;
+  color: #fff;
+  border: none;
+  padding: 10px 26px;
+  border-radius: 7px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 1.05rem;
+  transition: background 0.2s;
+}
+
+.primary-btn:hover {
+  background: #2356b8;
+}
+
+.students-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.students-table th, .students-table td {
+  text-align: left;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e6effc;
+}
+
+.students-table th {
+  background: #f2f6fb;
+  color: #347cf7;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.students-table tr:last-child td {
+  border-bottom: none;
+}
+
+.students-table tr:hover {
+  background: #f5f9ff;
+}
+
+================================================================================
+
+------src\components\StudentTable.js
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import StudentForm from "./StudentForm";
+import "./StudentTable.css";
+
+const universityOptions = [
+  "All Universities",
+  "Makerere University",
+  "Kyambogo University",
+  "UCU",
+  "MUST",
+  "Gulu University",
+  "MUBS",
+  "Busitema University"
+];
+
+export default function StudentTable() {
+  const [students, setStudents] = useState([]);
+  const [showForm, setShowForm] = useState(false);
+  const [search, setSearch] = useState("");
+  const [university, setUniversity] = useState("All Universities");
+  const [year, setYear] = useState("All Years");
+  const [gender, setGender] = useState("All");
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchStudents();
+  }, []);
+
+  function fetchStudents() {
+    setLoading(true);
+    axios.get("/show-students/")
+      .then(res => setStudents(res.data))
+      .finally(() => setLoading(false));
+  }
+
+  function handleAddStudent(data) {
+    axios.post("/add-student/", data)
+      .then(() => fetchStudents());
+  }
+
+  // Filtering logic
+  const filtered = students.filter((s) => (
+    (s.name.toLowerCase().includes(search.toLowerCase()) ||
+    s.email.toLowerCase().includes(search.toLowerCase()) ||
+    String(s.student_id).toLowerCase().includes(search.toLowerCase())) &&
+    (university === "All Universities" || s.university === university) &&
+    (year === "All Years" || String(s.year_of_study) === year) &&
+    (gender === "All" || s.gender === gender)
+  ));
+
+  return (
+    <div className="students-table-container">
+      <div className="search-bar">
+        <input type="text" placeholder="Search by name, email, or student ID..." value={search} onChange={e => setSearch(e.target.value)} className="search-field"/>
+        <div className="search-filters">
+          <div>
+            <label className="filter-label">Filter by University</label>
+            <select value={university} onChange={e => setUniversity(e.target.value)}>
+              {universityOptions.map(opt => <option key={opt}>{opt}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="filter-label">Filter by Year</label>
+            <select value={year} onChange={e => setYear(e.target.value)}>
+              <option>All Years</option>
+              <option>1</option>
+              <option>2</option>
+              <option>3</option>
+              <option>4</option>
+            </select>
+          </div>
+          <div>
+            <label className="filter-label">Gender</label>
+            <select value={gender} onChange={e => setGender(e.target.value)}>
+              <option>All</option>
+              <option>Male</option>
+              <option>Female</option>
+            </select>
+          </div>
+        </div>
+        <button className="export-btn">Export</button>
+        <button className="list-btn"><span role="img" aria-label="table">&#9776;</span></button>
+      </div>
+      <div className="students-header">
+        <h2>Students Management</h2>
+        <button className="primary-btn" onClick={() => setShowForm(true)}>
+          + Add Student
+        </button>
+      </div>
+      {loading ? <div>Loading...</div> : (
+        <table className="students-table">
+          <thead>
+            <tr>
+              <th>Student ID</th>
+              <th>Name</th>
+              <th>Gender</th>
+              <th>Date of Birth</th>
+              <th>Contact</th>
+              <th>Email</th>
+              <th>University</th>
+              <th>Course</th>
+              <th>Year of Study</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.map((s) => (
+              <tr key={s.student_id}>
+                <td>{s.student_id}</td>
+                <td>{s.name}</td>
+                <td>{s.gender}</td>
+                <td>{s.dateofbirth}</td>
+                <td>{s.contact}</td>
+                <td>{s.email}</td>
+                <td>{s.university}</td>
+                <td>{s.course}</td>
+                <td>{s.year_of_study}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+      {showForm && (
+        <StudentForm
+          onClose={() => setShowForm(false)}
+          onSave={data => {
+            handleAddStudent(data);
+            setShowForm(false);
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+================================================================================
+
