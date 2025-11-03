@@ -65,10 +65,26 @@ export default function Dashboard() {
       setTopPrograms, getMockTopPrograms());
   }, []);
 
+  const toArray = (value) => {
+    if (Array.isArray(value)) return value;
+    if (!value || typeof value !== "object") return [];
+    if (Array.isArray(value.results)) return value.results;
+    if (Array.isArray(value.data)) return value.data;
+    // If object with numeric keys
+    const vals = Object.values(value);
+    return Array.isArray(vals) && vals.every(v => typeof v === 'object') ? vals : [];
+  };
+
   const fetchWithFallback = (url, setter, mockData) => {
     fetch(url)
       .then(res => res.json())
-      .then(data => setter(data))
+      .then(data => {
+        const arr = toArray(data);
+        if (!Array.isArray(arr)) {
+          console.warn(`Expected array for ${url}, received`, data);
+        }
+        setter(Array.isArray(arr) ? arr : []);
+      })
       .catch(err => {
         console.log(`Using mock data for ${url}`);
         setter(mockData);
