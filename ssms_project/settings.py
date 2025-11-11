@@ -81,7 +81,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'ssms_db',  # name you saw in Workbench
         'USER': 'root',                    # MySQL username
-        'PASSWORD': 'dEn15@20', # replace this!
+        'PASSWORD': '#MJtus1st', # replace this!
         'HOST': 'localhost',               # local MySQL server
         'PORT': '3306',                    # default MySQL port
     }

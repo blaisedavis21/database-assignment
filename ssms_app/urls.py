@@ -19,6 +19,8 @@ urlpatterns = [
     # Dashboard analytics
     path('dashboard/totals/', views.dashboard_totals, name='dashboard-totals'),
     path('dashboard/recent-allocations/', views.show_recent_allocations, name='show-recent-allocations'),
+    path('dashboard/top-programs/', views.top_programs_by_funding, name='dashboard_top_programs'),
+    path('dashboard/sponsorship-status/', views.sponsorship_status_distribution, name='sponsorship_status'),
     path('dashboard/sponsorship-trends/', views.sponsorship_trends, name='sponsorship-trends'),
     path('dashboard/students-by-university/', views.students_by_university, name='students-by-university'),
     path('dashboard/sponsorship-status-distribution/', views.sponsorship_status_distribution, name='sponsorship-status-distribution'),

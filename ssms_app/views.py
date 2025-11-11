@@ -655,13 +655,17 @@ def delete_payment(request, payment_id):
 def sponsorship_trends(request):
     if request.method != 'GET':
         return JsonResponse({'error': 'Only GET method allowed.'}, status=405)
-
-    year = request.GET.get('year')
-    if not year:
-        return JsonResponse({'error': 'Year query parameter is required.'}, status=400)
+        
+    year_param = request.GET.get('year')
+    if not year_param:
+        year = datetime.now().year
+    else:
+        try:
+            year = int(year_param)
+        except (TypeError, ValueError):
+            return JsonResponse({'error': 'Year must be a valid integer.'}, status=400)
 
     try:
-        year = int(year)
         with connection.cursor() as cursor:
             cursor.execute("""
                 SELECT MONTH(start_date), COUNT(*)
@@ -677,14 +681,11 @@ def sponsorship_trends(request):
             trends[month] = count
 
         monthly = [
-            {'month': i, 'month_name': month_name[i], 'count': trends[i]}
+            {'month': month_name[i], 'new_allocations': trends[i]}
             for i in range(1, 13)
         ]
 
-        return JsonResponse({
-            'year': year,
-            'monthly_allocations': monthly
-        }, status=200)
+        return JsonResponse({'data': monthly, 'year': year}, status=200)
 
     except ValueError:
         return JsonResponse({'error': 'Year must be a valid integer.'}, status=400)
@@ -769,12 +770,39 @@ def payments_per_semester(request):
             """)
             rows = cursor.fetchall()
 
-        data = [
-            {'semester': row[0], 'total_amount': float(row[1])}
-            for row in rows
-        ]
+         # normalize rows into categories + series (make semester index numeric when possible)
+        categories = []
+        series_data = []
+        raw = []
+        for sem, total in rows:
+            # keep the original label
+            label = str(sem)
+            # try to extract numeric semester index (e.g. "Semester 1" -> 1)
+            sem_idx = None
+            try:
+                # try if sem is already numeric
+                sem_idx = int(sem)
+            except Exception:
+                # try to parse "Semester N"
+                parts = label.split()
+                try:
+                    sem_idx = int(parts[-1])
+                except Exception:
+                    sem_idx = None
 
-        return JsonResponse({'data': data}, status=200)
+            categories.append(label)
+            series_data.append(float(total) if total is not None else 0.0)
+            raw.append({'semester': label, 'semester_index': sem_idx, 'amount': float(total) if total is not None else 0.0})
+
+            # return both chart-friendly and raw formats
+            payload = {
+                'categories': categories,
+                'series': [
+                    {'name': 'Payments', 'data': series_data}
+                ],
+                'data': raw
+            }
+            return JsonResponse(payload, status=200)
 
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
@@ -888,7 +916,7 @@ def payments_per_semester(request):
             rows = cursor.fetchall()
 
         data = [
-            {'semester': row[0], 'total_amount': float(row[1])}
+            {'semester': row[0], 'amount': float(row[1])}
             for row in rows
         ]
 
@@ -994,8 +1022,8 @@ def upcoming_end_dates(request):
 
     try:
         # Default to 6 months ahead
-        months_ahead = int(request.GET.get('months', 6))
-        future_date = datetime.now() + timedelta(days=months_ahead * 30)
+        months_ahead = int(request.GET.get('months', 18))
+        future_date = (datetime.now() + timedelta(days=months_ahead * 30)).date()
 
         with connection.cursor() as cursor:
             cursor.execute("""
