@@ -91,6 +91,20 @@ export default function Dashboard() {
       });
   };
 
+  function renderRotatedCenteredTick({ x, y, payload }) {
+    const text = payload.value || "";
+    const [firstWord, ...rest] = text.split(" ");
+    const secondLine = rest.join(" ");
+    return (
+      <g transform={`translate(${x},${y + 25})`}>
+        <text x={0} y={0} textAnchor="middle" transform="rotate(-45)" style={{ fontSize: 16 }}>
+          <tspan x={0} dy={0}>{firstWord}</tspan>
+          {secondLine ? <tspan x={0} dy={14}>{secondLine}</tspan> : null}
+        </text>
+      </g>
+    );
+  }
+
   return (
     <div style={{ padding: 28, background: "#f5f7fa", minHeight: "100vh" }}>
       {/* Top Stats Cards */}
@@ -113,7 +127,7 @@ export default function Dashboard() {
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={studentsByUniversity}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="university" angle={-45} textAnchor="end" height={100} />
+              <XAxis dataKey="university" tick={renderRotatedCenteredTick} interval={0} height={100} />
               <YAxis />
               <Tooltip />
               <Bar dataKey="count" fill="#4069F6" />
@@ -170,7 +184,7 @@ export default function Dashboard() {
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={studentsByYear}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="year" />
+              <XAxis dataKey="year_of_study" />
               <YAxis />
               <Tooltip />
               <Bar dataKey="count" fill="#ffbb32" />
@@ -200,7 +214,7 @@ export default function Dashboard() {
           <ResponsiveContainer width="100%" height={280}>
             <LineChart data={sponsorshipTrends}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="period" />
+              <XAxis dataKey="month" />
               <YAxis />
               <Tooltip />
               <Legend />
@@ -212,7 +226,7 @@ export default function Dashboard() {
         <ChartCard title="💵 Avg Scholarship by Sponsor">
           <ResponsiveContainer width="100%" height={280}>
             <PieChart>
-              <Pie data={avgScholarship} dataKey="avg_amount" nameKey="sponsor_name" cx="50%" cy="50%" 
+              <Pie data={avgScholarship} dataKey="average_amount" nameKey="sponsor_name" cx="50%" cy="50%" 
                 outerRadius={80} label>
                 {avgScholarship.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -230,10 +244,10 @@ export default function Dashboard() {
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={topPrograms}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="program_name" angle={-45} textAnchor="end" height={100} />
+              <XAxis dataKey="program_name" tick={renderRotatedCenteredTick} interval={0} height={100} />
               <YAxis />
               <Tooltip />
-              <Bar dataKey="amount" fill="#4ecdc4" />
+              <Bar dataKey="amount_per_student" fill="#4ecdc4" />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
